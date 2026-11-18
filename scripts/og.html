@@ -1,0 +1,32 @@
+<!doctype html>
+<!--
+  Source for public/og.png (1200×630). To regenerate after `npm install`:
+  open this file in a browser, set the viewport to 1200×630 and take a screenshot,
+  or run: npx playwright screenshot --viewport-size=1200,630 scripts/og.html public/og.png
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>OG image</title>
+<style>
+  @font-face { font-family: 'Source Serif 4'; font-weight: 600; src: url('../node_modules/@fontsource/source-serif-4/files/source-serif-4-latin-600-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Instrument Sans'; font-weight: 500; src: url('../node_modules/@fontsource/instrument-sans/files/instrument-sans-latin-500-normal.woff2') format('woff2'); }
+  html, body { margin: 0; }
+  body {
+    width: 1200px; height: 630px; overflow: hidden; box-sizing: border-box;
+    padding: 72px 84px;
+    background: #EEEBFB;
+    color: #211A4A;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .brand { font-family: 'Source Serif 4'; font-weight: 600; font-size: 38px; }
+  h1 { margin: 0; max-width: 960px; font-family: 'Source Serif 4'; font-weight: 600; font-size: 92px; line-height: 1.04; letter-spacing: -0.02em; }
+  .foot { padding-top: 26px; border-top: 2px solid #4B36C9; font-family: 'Instrument Sans'; font-weight: 500; font-size: 30px; color: #524B78; }
+</style>
+</head>
+<body>
+  <div class="brand">Firas Kudsy</div>
+  <h1>I design and build agentic AI systems.</h1>
+  <div class="foot">Senior Software &amp; AI Engineer</div>
+</body>
+</html>

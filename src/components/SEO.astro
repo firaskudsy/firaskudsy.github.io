@@ -1,0 +1,46 @@
+---
+import { person } from '../data/site';
+
+interface Props {
+  title: string;
+  description: string;
+  type?: 'website' | 'article';
+  published?: Date | undefined;
+  modified?: Date | undefined;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[] | undefined;
+  noindex?: boolean;
+}
+
+const { title, description, type = 'website', published, modified, jsonLd, noindex = false } = Astro.props;
+
+const site = Astro.site ?? new URL('https://firaskudsy.github.io');
+const canonical = new URL(Astro.url.pathname, site).href;
+const ogImage = new URL('/og.png', site).href;
+const ogAlt = `${person.name}, ${person.title}: I design and build agentic AI systems.`;
+const ld = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+{noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
+<meta name="author" content={person.name} />
+
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content={person.name} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+{!noindex && <meta property="og:url" content={canonical} />}
+<meta property="og:image" content={ogImage} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={ogAlt} />
+{published && <meta property="article:published_time" content={published.toISOString()} />}
+{modified && <meta property="article:modified_time" content={modified.toISOString()} />}
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+<meta name="twitter:image:alt" content={ogAlt} />
+
+{ld.map((obj) => <script type="application/ld+json" set:html={JSON.stringify(obj).replace(/</g, '\\u003c')} />)}

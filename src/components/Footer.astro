@@ -1,0 +1,32 @@
+---
+import { copy } from '../data/site';
+
+interface Props {
+  /** 'home' continues the Contact band; 'page' stands alone on other pages. */
+  variant?: 'home' | 'page';
+}
+const { variant = 'page' } = Astro.props;
+---
+
+<footer class:list={['site-footer on-band', variant]}>
+  <div class="container">
+    <div class="row">
+      <span>{copy.footerLeft}</span>
+      <span>{copy.footerRight}</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px;
+    padding-block: 24px 36px;
+    font-size: 15px;
+    color: var(--on-band-muted);
+  }
+  .home .row { border-top: 1px solid var(--band-line); }
+  .page { margin-top: 72px; }
+</style>

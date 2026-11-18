@@ -1,0 +1,157 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+import { person } from '../data/site';
+
+interface Props {
+  /** Which part of the site is open, for the active nav state. */
+  current?: 'home' | 'notes';
+  /** True on /notes/ itself, so the Notes link gets aria-current="page". */
+  notesIndex?: boolean;
+}
+const { current = 'home', notesIndex = false } = Astro.props;
+
+const onNotes = current === 'notes';
+const links = [
+  { label: 'Skills', href: '/#skills' },
+  { label: 'Articles', href: onNotes ? '/notes/' : '/#articles', active: onNotes },
+  { label: 'Contact', href: '/#contact' },
+];
+---
+
+<header class="site-header on-band">
+  <nav aria-label="Main" class="container nav">
+    <a href="/" class="brand">{person.name}</a>
+
+    <div class="right">
+      <ul class="links" role="list">
+        {links.map((l) => (
+          <li>
+            <a
+              href={l.href}
+              class:list={['nav-link', { active: l.active }]}
+              aria-current={l.active ? (notesIndex ? 'page' : 'true') : undefined}
+            >{l.label}</a>
+          </li>
+        ))}
+      </ul>
+
+      <ThemeToggle />
+
+      <details class="menu" data-menu>
+        <summary class="menu-button">Menu</summary>
+        <ul class="menu-list" role="list">
+          {links.map((l) => (
+            <li>
+              <a
+                href={l.href}
+                class:list={['menu-link', { active: l.active }]}
+                aria-current={l.active ? (notesIndex ? 'page' : 'true') : undefined}
+              >{l.label}</a>
+            </li>
+          ))}
+        </ul>
+      </details>
+    </div>
+  </nav>
+</header>
+
+<style>
+  .site-header { position: relative; }
+  .nav {
+    padding-block: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .brand {
+    font-family: var(--f-head);
+    font-weight: 600;
+    font-size: 22px;
+    white-space: nowrap;
+  }
+  .right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .links {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 8px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .nav-link {
+    display: block;
+    padding: 10px 12px;
+    font-size: 16px;
+    font-weight: 500;
+  }
+  .nav-link.active,
+  .menu-link.active { color: var(--signal); }
+
+  /* Phone menu: <details>, so it works without JS. */
+  .menu { display: none; }
+  .menu-button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 16px;
+    border-radius: var(--r-box);
+    border: 1px solid var(--band-line);
+    font-weight: 500;
+    font-size: 16px;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+  }
+  .menu-button::-webkit-details-marker { display: none; }
+  .menu[open] .menu-button {
+    background: var(--on-band);
+    border-color: var(--on-band);
+    color: var(--band);
+  }
+  .menu-list {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    z-index: 20;
+    margin: 0;
+    padding: 4px var(--gutter) 16px;
+    list-style: none;
+    background: var(--band);
+    border-bottom: 1px solid var(--band-line);
+  }
+  .menu-link {
+    display: flex;
+    align-items: center;
+    min-height: 52px;
+    font-weight: 500;
+    font-size: 19px;
+    border-top: 1px solid var(--band-line);
+  }
+
+  @media (max-width: 719.98px) {
+    .links { display: none; }
+    .menu { display: block; }
+    .right { gap: 8px; }
+  }
+</style>
+
+<script>
+  // Close the phone menu after picking a link (e.g. same-page anchors).
+  document.querySelectorAll<HTMLDetailsElement>('[data-menu]').forEach((menu) => {
+    menu.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('a')) menu.open = false;
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && menu.open) {
+        menu.open = false;
+        menu.querySelector('summary')?.focus();
+      }
+    });
+  });
+</script>

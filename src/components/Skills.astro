@@ -1,0 +1,106 @@
+---
+import { background, copy, skillGroups } from '../data/site';
+---
+
+<section id="skills" class="skills" aria-labelledby="skills-title">
+  <div class="container inner">
+    <div class="head">
+      <h2 id="skills-title" class="h2">{copy.skillsTitle}</h2>
+      <p class="muted">{copy.skillsIntro}</p>
+    </div>
+
+    {skillGroups.map((g) => (
+      <div class="group">
+        <h3>{g.title}</h3>
+        <ul class:list={['layers', { ai: g.ai }]} role="list">
+          {g.skills.map((s) => (
+            <li class="layer">
+              <h4>{s.name}</h4>
+              <p class="desc">{s.desc}</p>
+              <p class="tools"><span class="visually-hidden">Tools: </span>{s.tools}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+
+    <div class="background">
+      <h3>Background</h3>
+      <p class="muted">{background}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .inner {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(32px, 4vw, 48px);
+    padding-block: var(--section-y);
+  }
+  .head {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 40em;
+    text-wrap: pretty;
+  }
+  h3 {
+    font-size: 24px;
+    line-height: 1.25;
+  }
+  .group {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* The skills stack like the layers of a system; the accent marks the AI layers. */
+  .layers {
+    display: grid;
+    gap: 2px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-radius: var(--r-box);
+    overflow: hidden;
+  }
+  .layer {
+    display: grid;
+    grid-template-columns: minmax(0, 3.2fr) minmax(0, 5fr) minmax(0, 3.8fr);
+    gap: 10px clamp(24px, 3vw, 40px);
+    align-items: baseline;
+    padding: 26px clamp(20px, 3vw, 32px);
+    border-left: 4px solid var(--band-line);
+    background: var(--band);
+    color: var(--on-band);
+  }
+  .ai .layer { border-left-color: var(--signal); }
+  h4 {
+    margin: 0;
+    font-family: var(--f-head);
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+  .desc { text-wrap: pretty; }
+  .tools {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--on-band-muted);
+  }
+
+  .background {
+    display: grid;
+    grid-template-columns: minmax(0, 3.2fr) minmax(0, 8.8fr);
+    gap: 8px clamp(24px, 3vw, 40px);
+    padding-top: 28px;
+    border-top: 1px solid var(--line);
+  }
+  .background p { max-width: 44em; }
+
+  @media (max-width: 859.98px) {
+    .layer,
+    .background { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>

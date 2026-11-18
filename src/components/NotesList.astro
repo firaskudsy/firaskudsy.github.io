@@ -1,0 +1,156 @@
+---
+import { formatMonthYear, noteHref, topicsIn, type Note } from '../lib/notes';
+
+interface Props {
+  notes: Note[];
+  /** Show the topic filter (used on /notes/). */
+  filters?: boolean;
+  /** Keep the chosen topic in ?topic= (used on /notes/). */
+  syncUrl?: boolean;
+}
+const { notes, filters = false, syncUrl = false } = Astro.props;
+const topics = topicsIn(notes);
+---
+
+<div class="notes" data-notes data-sync-url={syncUrl ? '' : undefined}>
+  {/* Shown only when JS is on (html.js, set before first paint); without JS every note shows. */}
+  {filters && (
+    <div class="filters" role="group" aria-label="Filter articles by topic" data-filters>
+      {['All', ...topics].map((t) => (
+        <button type="button" class="filter" aria-pressed={t === 'All' ? 'true' : 'false'} data-topic={t}>{t}</button>
+      ))}
+    </div>
+  )}
+
+  <ul class="rows" role="list">
+    {notes.map((n) => (
+      <li data-topic={n.data.topic}>
+        <a href={noteHref(n)} class="row">
+          <span class="meta">
+            <time datetime={n.data.pubDate.toISOString().slice(0, 10)}>{formatMonthYear(n.data.pubDate)}</time>
+            <span class="topic">{n.data.topic}</span>
+          </span>
+          <span class="main">
+            <span class="title">{n.data.title}</span>
+            <span class="excerpt">{n.data.description}</span>
+          </span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</div>
+
+<style>
+  .notes {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .filters {
+    display: none;
+    flex-wrap: wrap;
+    gap: 4px 20px;
+    border-bottom: 1px solid var(--line);
+  }
+  :global(.js) .filters { display: flex; }
+  .filter {
+    min-height: 44px;
+    margin-bottom: -1px;
+    padding: 0 2px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: none;
+    color: var(--muted);
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .filter:hover { color: var(--ink); }
+  .filter[aria-pressed='true'] {
+    border-bottom-color: var(--accent-ink);
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .rows {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .rows li { border-top: 1px solid var(--line); }
+  .rows li:first-child { border-top: 0; }
+  .rows li[hidden] { display: none; }
+  .row {
+    display: grid;
+    grid-template-columns: 136px minmax(0, 1fr);
+    gap: 6px 28px;
+    padding-block: 24px;
+    text-decoration: none;
+  }
+  .meta {
+    display: flex;
+    flex-direction: column;
+    padding-top: 4px;
+    font-size: 15px;
+    color: var(--muted);
+  }
+  .topic {
+    font-weight: 500;
+    color: var(--accent-ink);
+  }
+  .main {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .title {
+    font-family: var(--f-head);
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 1.25;
+  }
+  .row:hover .title { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+  .excerpt {
+    max-width: 44em;
+    color: var(--muted);
+    font-size: 16px;
+  }
+
+  @media (max-width: 639.98px) {
+    .row { grid-template-columns: minmax(0, 1fr); }
+    .meta { flex-direction: row; gap: 14px; }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-notes]').forEach((root) => {
+    const group = root.querySelector<HTMLElement>('[data-filters]');
+    if (!group) return;
+    const chips = Array.from(group.querySelectorAll<HTMLButtonElement>('button[data-topic]'));
+    const rows = Array.from(root.querySelectorAll<HTMLElement>('li[data-topic]'));
+    const sync = root.hasAttribute('data-sync-url');
+    const valid = new Set(chips.map((c) => c.dataset.topic));
+
+    function select(topic: string, updateUrl: boolean) {
+      if (!valid.has(topic)) topic = 'All';
+      chips.forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.topic === topic)));
+      rows.forEach((r) => (r.hidden = topic !== 'All' && r.dataset.topic !== topic));
+      if (sync && updateUrl) {
+        const url = new URL(window.location.href);
+        if (topic === 'All') url.searchParams.delete('topic');
+        else url.searchParams.set('topic', topic);
+        history.replaceState(null, '', url);
+      }
+    }
+
+    chips.forEach((c) => c.addEventListener('click', () => select(c.dataset.topic ?? 'All', true)));
+
+    if (sync) {
+      const fromUrl = new URLSearchParams(window.location.search).get('topic');
+      if (fromUrl) select(fromUrl, false);
+    }
+  });
+</script>

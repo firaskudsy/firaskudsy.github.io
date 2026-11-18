@@ -1,0 +1,55 @@
+---
+import { formatFullDate } from '../lib/notes';
+
+interface Props {
+  title: string;
+  url: string;
+  publisher: string;
+  date: Date;
+}
+const { title, url, publisher, date } = Astro.props;
+---
+
+<a href={url} class="source">
+  <span class="text">
+    <span class="kicker">Based on</span>
+    <span class="title">{title}</span>
+    <span class="meta">{publisher}, <time datetime={date.toISOString().slice(0, 10)}>{formatFullDate(date)}</time></span>
+  </span>
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"></path></svg>
+</a>
+
+<style>
+  .source {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 12px;
+    padding: 20px 22px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-box);
+    background: var(--soft);
+    text-decoration: none;
+  }
+  .source:hover .title { text-decoration: underline; }
+  .text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .kicker {
+    font-size: 14.5px;
+    color: var(--muted);
+  }
+  .title {
+    font-weight: 600;
+    font-size: 17px;
+  }
+  .meta {
+    font-size: 14.5px;
+    color: var(--muted);
+  }
+  svg { color: var(--muted); }
+</style>

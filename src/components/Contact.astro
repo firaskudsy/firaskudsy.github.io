@@ -1,0 +1,61 @@
+---
+import { contact, copy, rssPath } from '../data/site';
+
+const links = [
+  { label: 'LinkedIn', href: contact.linkedin, rel: 'me' },
+  { label: 'GitHub', href: contact.github, rel: 'me' },
+  { label: 'RSS', href: rssPath },
+];
+---
+
+<section id="contact" class="contact on-band" aria-labelledby="contact-title">
+  <div class="container inner">
+    <h2 id="contact-title" class="h2">{copy.contactTitle}</h2>
+    <p class="intro">{copy.contactIntro}</p>
+    <a href={`mailto:${contact.email}`} class="email">{contact.email}</a>
+    <ul class="links" role="list">
+      {links.map((l) => (
+        <li><a href={l.href} rel={l.rel}>{l.label}</a></li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    padding-top: var(--section-y);
+    padding-bottom: 56px;
+  }
+  .intro { color: var(--on-band-muted); }
+  .email {
+    max-width: 100%;
+    margin-top: 10px;
+    font-family: var(--f-head);
+    font-weight: 600;
+    font-size: clamp(25px, 4vw, 48px);
+    line-height: 1.2;
+    color: var(--signal);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 7px;
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 28px;
+    margin: 14px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-weight: 600;
+    text-decoration: underline;
+  }
+</style>

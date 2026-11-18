@@ -1,0 +1,35 @@
+---
+import { getImage } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Skills from '../components/Skills.astro';
+import Articles from '../components/Articles.astro';
+import Contact from '../components/Contact.astro';
+import avatar from '../assets/firas.jpeg';
+import { contact, copy, person } from '../data/site';
+import { getNotes } from '../lib/notes';
+
+const notes = await getNotes();
+
+const site = Astro.site ?? new URL('https://firaskudsy.github.io');
+const avatarImg = await getImage({ src: avatar, width: 400, format: 'jpg' });
+const personLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: person.name,
+  url: site.href,
+  image: new URL(avatarImg.src, site).href,
+  jobTitle: person.title,
+  description: copy.heroLead,
+  email: `mailto:${contact.email}`,
+  homeLocation: { '@type': 'Place', name: person.location },
+  sameAs: [contact.linkedin, contact.github],
+};
+---
+
+<Base title={`${person.name} | ${person.title}`} description={copy.heroLead} jsonLd={personLd} footer="home">
+  <Hero />
+  <Skills />
+  <Articles notes={notes} />
+  <Contact />
+</Base>

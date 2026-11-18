@@ -1,0 +1,81 @@
+---
+import { giscus, giscusEnabled } from '../data/giscus';
+---
+
+{/* The whole section stays hidden until src/data/giscus.ts is filled in. */}
+{giscusEnabled && (
+  <section class="comments" aria-labelledby="comments-title">
+    <h2 id="comments-title">Comments</h2>
+    <div
+      class="giscus-host"
+      data-giscus
+      data-repo={giscus.repo}
+      data-repo-id={giscus.repoId}
+      data-category={giscus.category}
+      data-category-id={giscus.categoryId}
+      data-mapping={giscus.mapping}
+      data-strict={giscus.strict}
+      data-reactions-enabled={giscus.reactionsEnabled}
+      data-emit-metadata={giscus.emitMetadata}
+      data-input-position={giscus.inputPosition}
+      data-lang={giscus.lang}
+    >
+      <noscript><p class="muted">Comments need JavaScript (they're powered by GitHub Discussions).</p></noscript>
+    </div>
+  </section>
+)}
+
+<style>
+  .comments {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 20px;
+    padding-top: 36px;
+    border-top: 1px solid var(--line);
+  }
+  h2 {
+    font-weight: 600;
+    font-size: 24px;
+  }
+  .giscus-host { min-height: 150px; }
+</style>
+
+<script>
+  // Load Giscus only when the comments come close to the viewport.
+  const host = document.querySelector<HTMLElement>('[data-giscus]');
+  if (host) {
+    const theme = () => (document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light');
+
+    const load = () => {
+      const s = document.createElement('script');
+      s.src = 'https://giscus.app/client.js';
+      s.async = true;
+      s.crossOrigin = 'anonymous';
+      for (const [k, v] of Object.entries(host.dataset)) {
+        if (k === 'giscus' || v === undefined) continue;
+        s.setAttribute('data-' + k.replace(/[A-Z]/g, (c) => '-' + c.toLowerCase()), v);
+      }
+      s.setAttribute('data-theme', theme());
+      s.setAttribute('data-loading', 'lazy');
+      host.appendChild(s);
+    };
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          io.disconnect();
+          load();
+        }
+      },
+      { rootMargin: '600px 0px' },
+    );
+    io.observe(host);
+
+    // Keep Giscus in sync with the site theme toggle.
+    window.addEventListener('themechange', () => {
+      const frame = host.querySelector<HTMLIFrameElement>('iframe.giscus-frame');
+      frame?.contentWindow?.postMessage({ giscus: { setConfig: { theme: theme() } } }, 'https://giscus.app');
+    });
+  }
+</script>

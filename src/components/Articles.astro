@@ -1,0 +1,205 @@
+---
+import { copy, rssPath } from '../data/site';
+import { formatMonthYear, noteHref, readingMinutes, topicsIn, type Note } from '../lib/notes';
+
+interface Props {
+  /** Every published article, newest first. */
+  notes: Note[];
+}
+const { notes } = Astro.props;
+const [lead, ...others] = notes.slice(0, 5);
+const topics = topicsIn(notes).map((topic) => ({
+  topic,
+  count: notes.filter((n) => n.data.topic === topic).length,
+}));
+const iso = (n: Note) => n.data.pubDate.toISOString().slice(0, 10);
+---
+
+<section id="articles" class="articles" aria-labelledby="articles-title">
+  <div class="container inner">
+    <div class="head">
+      <h2 id="articles-title" class="h2">{copy.notesTitle}</h2>
+      <p class="muted">{copy.notesIntro}</p>
+    </div>
+
+    <div class="layout">
+      {lead && (
+        <a href={noteHref(lead)} class="lead on-band">
+          <span class="lead-meta">
+            <span>Latest article</span>
+            <span>{lead.data.topic}</span>
+            <span>{readingMinutes(lead.body)} min read</span>
+          </span>
+          <span class="lead-title">{lead.data.title}</span>
+          <span class="lead-desc">{lead.data.description}</span>
+        </a>
+      )}
+
+      <ul class="others" role="list">
+        {others.map((n) => (
+          <li>
+            <a href={noteHref(n)}>
+              <span class="meta">
+                <span class="topic">{n.data.topic}</span>
+                <time datetime={iso(n)}>{formatMonthYear(n.data.pubDate)}</time>
+              </span>
+              <span class="title">{n.data.title}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <div class="browse">
+      <nav class="topics" aria-label="Browse articles by topic">
+        {topics.map((t) => (
+          <a href={`/notes/?topic=${encodeURIComponent(t.topic)}`}>{t.topic} ({t.count})</a>
+        ))}
+      </nav>
+      <div class="actions">
+        <a href="/notes/" class="btn btn-primary">Read all {notes.length} articles</a>
+        <a href={rssPath} class="text-link">Subscribe by RSS</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .articles {
+    background: var(--card);
+    border-top: 1px solid var(--line);
+  }
+  .inner {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(32px, 4vw, 48px);
+    padding-block: var(--section-y);
+  }
+  .head {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 40em;
+  }
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: clamp(28px, 5vw, 64px);
+  }
+
+  .lead {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 16px;
+    min-height: 420px;
+    padding: clamp(24px, 4vw, 48px);
+    border-radius: var(--r-box);
+    border-left: 4px solid var(--signal);
+    text-decoration: none;
+  }
+  .lead:hover { text-decoration: none; }
+  .lead-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 18px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--on-band-muted);
+  }
+  .lead-meta span:first-child { color: var(--signal); }
+  .lead-title {
+    font-family: var(--f-head);
+    font-weight: 600;
+    font-size: clamp(34px, 4vw, 54px);
+    line-height: 1.08;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+  .lead:hover .lead-title {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 6px;
+  }
+  .lead-desc {
+    max-width: 34em;
+    font-size: 18px;
+    color: var(--on-band-muted);
+  }
+
+  .others {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .others li { border-top: 1px solid var(--line); }
+  .others li:first-child { border-top: 0; }
+  .others a {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-block: 18px;
+    text-decoration: none;
+  }
+  .others li:first-child a { padding-top: 0; }
+  .others li:last-child a { padding-bottom: 0; }
+  .meta {
+    display: flex;
+    gap: 14px;
+    font-size: 15px;
+    color: var(--muted);
+  }
+  .topic {
+    font-weight: 500;
+    color: var(--accent-ink);
+  }
+  .title {
+    font-family: var(--f-head);
+    font-weight: 600;
+    font-size: 22px;
+    line-height: 1.25;
+  }
+  .others a:hover .title {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+  }
+
+  .browse {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+  }
+  .topics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 20px;
+  }
+  .topics a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+  .topics a:hover { color: var(--ink); }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 24px;
+  }
+
+  @media (max-width: 899.98px) {
+    .layout { grid-template-columns: minmax(0, 1fr); }
+    .lead { min-height: 320px; }
+  }
+</style>

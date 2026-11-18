@@ -1,0 +1,40 @@
+---
+import Base from '../layouts/Base.astro';
+import { person } from '../data/site';
+---
+
+<Base title={`Page not found | ${person.name}`} description="This page doesn't exist." noindex>
+  <section class="container inner" aria-labelledby="nf-title">
+    <h1 id="nf-title">Page not found</h1>
+    <p class="lead">This page doesn't exist, or it moved when the site was rebuilt.</p>
+    <div class="ctas">
+      <a href="/" class="btn btn-primary">Go to the homepage</a>
+      <a href="/notes/" class="btn btn-secondary">Read the articles</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .inner {
+    padding-top: var(--section-y);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  h1 {
+    font-size: clamp(42px, 6vw, 76px);
+    line-height: 1.04;
+    letter-spacing: -0.02em;
+  }
+  .lead {
+    max-width: 34em;
+    font-size: 19px;
+    color: var(--muted);
+  }
+  .ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-top: 8px;
+  }
+</style>

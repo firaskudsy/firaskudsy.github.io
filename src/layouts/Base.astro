@@ -1,0 +1,83 @@
+---
+import { Font } from 'astro:assets';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import SEO from '../components/SEO.astro';
+import '../styles/global.css';
+
+export interface Props {
+  title: string;
+  description: string;
+  /** Open Graph type. */
+  type?: 'website' | 'article';
+  /** For notes: published / modified dates. */
+  published?: Date;
+  modified?: Date;
+  /** Structured data object(s) for <script type="application/ld+json">. */
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  current?: 'home' | 'notes';
+  notesIndex?: boolean;
+  footer?: 'home' | 'page';
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description,
+  type = 'website',
+  published,
+  modified,
+  jsonLd,
+  current = 'home',
+  notesIndex = false,
+  footer = 'page',
+  noindex = false,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>
+      // Apply the saved theme (or the OS setting) before first paint.
+      (function () {
+        var t;
+        try { t = localStorage.getItem('theme'); } catch (e) {}
+        if (t !== 'light' && t !== 'dark') {
+          t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        document.documentElement.setAttribute('data-theme', t);
+        document.documentElement.classList.add('js');
+      })();
+    </script>
+    <Font cssVariable="--font-source-serif" preload={[{ weight: 600, style: 'normal' }]} />
+    <Font cssVariable="--font-instrument-sans" preload={[{ weight: 400 }]} />
+    <SEO
+      title={title}
+      description={description}
+      type={type}
+      published={published}
+      modified={modified}
+      jsonLd={jsonLd}
+      noindex={noindex}
+    />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="alternate" type="application/rss+xml" title="Firas Kudsy: Articles" href={new URL('/rss.xml', Astro.site)} />
+    <meta name="theme-color" content="#EEEBFB" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1E1A3D" media="(prefers-color-scheme: dark)" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header current={current} notesIndex={notesIndex} />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer variant={footer} />
+  </body>
+</html>
+
+<style>
+  main:focus { outline: none; }
+</style>

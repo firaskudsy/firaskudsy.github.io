@@ -1,0 +1,36 @@
+---
+title: "More memory is not better memory"
+description: "One model wrote 413 memory files and earned one badge. A newer one wrote about ten and finished the game."
+pubDate: 2026-11-18  # placeholder: set to the day you actually post it
+topic: Agents
+tags: [agents, memory]
+kind: note
+source:
+  title: "The components of agent memory"
+  url: https://www.anthropic.com/research/components-of-agent-memory
+  publisher: Anthropic Research
+  date: 2026-11-06
+linkedin: ""  # paste the LinkedIn post URL after posting
+draft: false
+---
+
+import StatRow from '../../components/StatRow.astro';
+
+Anthropic published a piece on agent memory and one experiment made me smile a bit..
+
+they gave different Claude models a memory folder and let them play Pokémon Red. the old Sonnet 3.7 wrote 413 memory files in 225 folders. it logged almost everything .. and got one badge. a good part of its effort went into dealing with its own stale notes.
+
+Fable 5 wrote around 10 files. only strategy, plans and rules it had actually tested. four badges. Opus 5.5 kept a small set of notes that it kept rewriting, and it finished the game.
+
+<StatRow
+  caption="Pokémon Red runs with a memory folder, from Anthropic's “The components of agent memory”."
+  stats={[
+    { label: 'Sonnet 3.7', value: '413 files', result: '1 badge' },
+    { label: 'Fable 5', value: '~10 files', result: '4 badges' },
+    { label: 'Opus 5.5', value: 'small, rewritten', result: 'Beat the game', highlight: true },
+  ]}
+/>
+
+so more memory is not better memory.
+
+the idea from the article that stuck with me is that the agent has to decide what is worth remembering before it knows what comes next. that's the real design problem .. not the vector db, not the storage.

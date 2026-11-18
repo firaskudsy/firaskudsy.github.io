@@ -1,0 +1,21 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { render } from 'astro:content';
+import NoteLayout from '../../layouts/Note.astro';
+import { getNotes } from '../../lib/notes';
+
+export const getStaticPaths = (async () => {
+  const notes = await getNotes(); // newest first
+  return notes.map((note, i) => ({
+    params: { slug: note.id },
+    props: { note, prev: notes[i - 1], next: notes[i + 1] },
+  }));
+}) satisfies GetStaticPaths;
+
+const { note, prev, next } = Astro.props;
+const { Content } = await render(note);
+---
+
+<NoteLayout note={note} prev={prev} next={next}>
+  <Content />
+</NoteLayout>

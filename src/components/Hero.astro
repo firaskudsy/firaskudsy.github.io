@@ -1,0 +1,83 @@
+---
+import { copy, heroFacts, person } from '../data/site';
+---
+
+<section class="hero on-band" aria-labelledby="hero-title">
+  <div class="container inner">
+    <p class="who">{person.name}, {person.title}</p>
+    <h1 id="hero-title">{copy.heroTitle}</h1>
+    <p class="lead">{copy.heroLead}</p>
+
+    <div class="ctas">
+      <a href="#skills" class="btn btn-primary">See my skills</a>
+      <a href="#articles" class="btn btn-secondary">Read my articles</a>
+    </div>
+
+    <dl class="facts">
+      {heroFacts.map((f) => (
+        <div>
+          <dt>{f.label}</dt>
+          <dd>{f.value}</dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+</section>
+
+<style>
+  .inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: clamp(48px, 8vw, 104px);
+    padding-bottom: 40px;
+  }
+  .who {
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--on-band-muted);
+  }
+  h1 {
+    max-width: 12.5em;
+    margin-top: 18px;
+    font-size: clamp(46px, 7.6vw, 100px);
+    line-height: 1.02;
+    letter-spacing: -0.022em;
+    text-wrap: balance;
+  }
+  .lead {
+    max-width: 37em;
+    margin-top: 28px;
+    font-size: clamp(18px, 1.7vw, 21px);
+    line-height: 1.5;
+    color: var(--on-band-muted);
+    text-wrap: pretty;
+  }
+  .ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 36px;
+  }
+  .facts {
+    align-self: stretch;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px clamp(24px, 4vw, 56px);
+    margin: clamp(56px, 8vw, 96px) 0 0;
+    padding-top: 24px;
+    border-top: 1px solid var(--band-line);
+  }
+  dt {
+    font-size: 15px;
+    color: var(--on-band-muted);
+  }
+  dd {
+    margin: 2px 0 0;
+    font-weight: 500;
+  }
+
+  @media (max-width: 759.98px) {
+    .facts { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>
